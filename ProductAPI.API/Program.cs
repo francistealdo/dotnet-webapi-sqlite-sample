@@ -1,6 +1,14 @@
 
 using Microsoft.EntityFrameworkCore;
+using ProductAPI.Application;
+using ProductAPI.Application.Interface;
+using ProductAPI.Application.Interface.Mapper;
+using ProductAPI.Application.Mapper;
+using ProductAPI.Domain.Core.Interface.Repository;
+using ProductAPI.Domain.Core.Interface.Service;
+using ProductAPI.Domain.Service;
 using ProductAPI.Infrastructure.Data;
+using ProductAPI.Infrastructure.Data.Repository;
 
 namespace ProductAPI.API
 {
@@ -19,21 +27,33 @@ namespace ProductAPI.API
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "API Product", Version = "v1" });
+            });
+
+            builder.Services.AddScoped<IProductApplicationService, ProductApplicationService>();
+            builder.Services.AddScoped<IProductService, ProductService>();
+            builder.Services.AddScoped<IProductRepository, ProductRepository>();
+            builder.Services.AddScoped<IProductMapper, ProductMapper>();
 
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
+                app.UseDeveloperExceptionPage();
+
                 app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "API Product");
+                });
             }
 
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
 
             app.MapControllers();
 

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ProductAPI.Application.Dto;
+using ProductAPI.Application.Interface;
 
 namespace ProductAPI.API.Controllers
 {
@@ -8,10 +9,21 @@ namespace ProductAPI.API.Controllers
     [ApiController]
     public class ProductsController : ControllerBase
     {
-        [HttpGet]
-        public ActionResult<List<ProductDto>> GetAll()
+        private readonly IProductApplicationService _productApplicationService;
+
+        public ProductsController(IProductApplicationService productApplicationService)
         {
-            var result = GetProducts();
+            _productApplicationService = productApplicationService;
+        }
+
+        /// <summary>
+        /// Get All Products.
+        /// </summary>
+        /// <returns>Get All Products.</returns>
+        [HttpGet]
+        public ActionResult<IEnumerable<ProductDto>> GetAll()
+        {
+            IEnumerable<ProductDto> result = _productApplicationService.GetAll();
 
             if (result == null || !result.Any())
                 return NoContent();
@@ -19,10 +31,15 @@ namespace ProductAPI.API.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Get a Product by Id.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Get a Product by Id.</returns>
         [HttpGet("{id}")]
         public ActionResult<ProductDto> GetById(int id)
         {
-            var result = GetProducts().Where(p => p.Id == id).FirstOrDefault();
+            ProductDto result = _productApplicationService.GetById(id);
 
             if (result == null)
                 return NotFound();
@@ -30,26 +47,18 @@ namespace ProductAPI.API.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Add new Product.
+        /// </summary>
+        /// <param name="product"></param>
+        /// <returns>Add new Product.</returns>
         [HttpPost]
-        public ActionResult<string> Create([FromBody] string product)
+        public ActionResult<string> Create([FromBody] ProductDto productDto)
         {
-            return Ok($"Create product: {product}");
-        }
+            // TODO: Add validation for the productDto object before calling the service layer.
 
-        private List<ProductDto> GetProducts()
-        {
-            List<ProductDto> result = new List<ProductDto>();
-
-            for (int i = 1; i < 100; i++)
-            {
-                result.Add(new ProductDto
-                {
-                    Id = i,
-                    Name = $"Product {i}",
-                    Description = $"Description for product {i}"
-                });
-            }
-            return result;
+            _productApplicationService.Add(productDto);
+            return Ok("Post registered successfully.");
         }
     }
 }
