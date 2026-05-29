@@ -8,12 +8,12 @@ namespace ProductAPI.Application.Mapper
     {
         public ProductDto MapperEntityToDto(Product product)
         {
-            ProductDto dto = new ProductDto()
+            ProductDto? dto = product != null ? new ProductDto()
             {
                 Id = product.Id,
                 Name = product.Name,
                 Description = product.Description
-            };
+            } : null;
 
             return dto;
         }
