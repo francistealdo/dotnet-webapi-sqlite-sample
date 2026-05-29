@@ -33,9 +33,13 @@ namespace ProductAPI.API
             });
 
             builder.Services.AddScoped<IProductApplicationService, ProductApplicationService>();
+            builder.Services.AddScoped<ICategoryApplicationService, CategoryApplicationService>();
             builder.Services.AddScoped<IProductService, ProductService>();
+            builder.Services.AddScoped<ICategoryService, CategoryService>();
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
+            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
             builder.Services.AddScoped<IProductMapper, ProductMapper>();
+            builder.Services.AddScoped<ICategoryMapper, CategoryMapper>();
 
             var app = builder.Build();
 

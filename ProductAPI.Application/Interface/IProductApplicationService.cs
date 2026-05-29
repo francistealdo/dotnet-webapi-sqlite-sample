@@ -4,8 +4,9 @@ namespace ProductAPI.Application.Interface
 {
     public interface IProductApplicationService
     {
-        void Add(ProductDto productDto);
-        void Delete(ProductDto productDto);
+        ProductDto Add(ProductDto productDto);
+        ProductDto Update(ProductDto productDto);
+        void Delete(int id);
         IEnumerable<ProductDto> GetAll();
         ProductDto GetById(int id);
     }

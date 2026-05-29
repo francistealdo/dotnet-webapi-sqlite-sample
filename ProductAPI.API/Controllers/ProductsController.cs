@@ -17,25 +17,27 @@ namespace ProductAPI.API.Controllers
         }
 
         /// <summary>
-        /// Get All Products.
+        /// Gets all products.
         /// </summary>
-        /// <returns>Get All Products.</returns>
+        /// <returns>Collection of products.</returns>
+        /// <response code="200">Returns the collection of products.</response>
+        [ProducesResponseType(typeof(IEnumerable<ProductDto>), StatusCodes.Status200OK)]
         [HttpGet]
         public ActionResult<IEnumerable<ProductDto>> GetAll()
         {
             IEnumerable<ProductDto> result = _productApplicationService.GetAll();
 
-            if (result == null || !result.Any())
-                return NoContent();
-
             return Ok(result);
         }
 
         /// <summary>
-        /// Get a Product by Id.
+        /// Retrieves a product by its identifier.
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns>Get a Product by Id.</returns>
+        /// <param name="id">Product identifier.</param>
+        /// <response code="200">Returns the requested product.</response>
+        /// <response code="404">Product not found.</response>
+        [ProducesResponseType(typeof(ProductDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet("{id}")]
         public ActionResult<ProductDto> GetById(int id)
         {
@@ -48,17 +50,70 @@ namespace ProductAPI.API.Controllers
         }
 
         /// <summary>
-        /// Add new Product.
+        /// Creates a new product.
         /// </summary>
-        /// <param name="product"></param>
-        /// <returns>Add new Product.</returns>
+        /// <param name="productDto">Product data.</param>
+        /// <response code="201">Product created successfully.</response>
+        /// <response code="400">Invalid request.</response>
+        [ProducesResponseType(typeof(ProductDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost]
-        public ActionResult<string> Create([FromBody] ProductDto productDto)
+        public ActionResult<ProductDto> Create([FromBody] ProductDto productDto)
         {
-            // TODO: Add validation for the productDto object before calling the service layer.
+            var createdProduct = _productApplicationService.Add(productDto);
 
-            _productApplicationService.Add(productDto);
-            return Ok("Post registered successfully.");
+            return CreatedAtAction(
+                nameof(GetById),
+                new { id = createdProduct.Id },
+                createdProduct);
+        }
+
+        /// <summary>
+        /// Updates an existing product.
+        /// </summary>
+        /// <param name="id">Product identifier.</param>
+        /// <param name="productDto">Updated product data.</param>
+        /// <response code="200">Returns the updated product.</response>
+        /// <response code="400">Product ID mismatch.</response>
+        /// <response code="404">Product not found.</response>
+        [ProducesResponseType(typeof(ProductDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [HttpPut("{id}")]
+        public ActionResult<ProductDto> Update(int id, [FromBody] ProductDto productDto)
+        {
+            if (id != productDto.Id)
+                return BadRequest("Product ID mismatch.");
+
+            var existingProduct = _productApplicationService.GetById(id);
+
+            if (existingProduct == null)
+                return NotFound();
+
+            var updatedProduct = _productApplicationService.Update(productDto);
+
+            return Ok(updatedProduct);
+        }
+
+        /// <summary>
+        /// Deletes a product by its identifier.
+        /// </summary>
+        /// <param name="id">Product identifier.</param>
+        /// <response code="204">Product deleted successfully.</response>
+        /// <response code="404">Product not found.</response>
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            var productDto = _productApplicationService.GetById(id);
+
+            if (productDto == null)
+                return NotFound();
+
+            _productApplicationService.Delete(productDto.Id);
+
+            return NoContent();
         }
     }
 }

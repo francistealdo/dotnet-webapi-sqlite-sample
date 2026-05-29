@@ -12,14 +12,19 @@ namespace ProductAPI.Domain.Service
             this.repository = repository;
         }
 
-        public void Add(TEntity obj)
+        public TEntity Add(TEntity entity)
         {
-            repository.Add(obj);
+            return repository.Add(entity);
         }
 
-        public void Delete(TEntity obj)
+        public TEntity Update(TEntity entity)
         {
-            repository.Delete(obj);
+            return repository.Update(entity);
+        }
+
+        public void Delete(int id)
+        {
+            repository.Delete(id);
         }
 
         public IEnumerable<TEntity> GetAll()

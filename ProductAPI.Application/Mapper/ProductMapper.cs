@@ -12,7 +12,13 @@ namespace ProductAPI.Application.Mapper
             {
                 Id = product.Id,
                 Name = product.Name,
-                Description = product.Description
+                Description = product.Description,
+                SKU = product.SKU,
+                CategoryId = product.CategoryId,
+                CategoryName = product.Category != null ? product.Category.Name : null,
+                IsActive = product.IsActive,
+                Price = product.Price,
+                StockQuantity = product.StockQuantity
             } : null;
 
             return dto;
@@ -26,7 +32,12 @@ namespace ProductAPI.Application.Mapper
             Product product = new Product()
             {
                 Name = dto.Name,
-                Description = dto.Description
+                Description = dto.Description,
+                SKU = dto.SKU,
+                CategoryId= dto.CategoryId,
+                IsActive= dto.IsActive,
+                Price= dto.Price,
+                StockQuantity= dto.StockQuantity
             };
 
             return product;

@@ -12,13 +12,14 @@ namespace ProductAPI.Infrastructure.Data.Repository
             this.appDbContext = appDbContext;
         }
 
-        public void Add(TEntity obj)
+        public TEntity Add(TEntity entity)
         {
             try
             {
-                appDbContext.Entry(obj).State = EntityState.Added;
-                appDbContext.Set<TEntity>().Add(obj);
+                appDbContext.Entry(entity).State = EntityState.Added;
+                appDbContext.Set<TEntity>().Add(entity);
                 appDbContext.SaveChanges();
+                return entity;
             }
             catch (Exception ex)
             {
@@ -26,11 +27,31 @@ namespace ProductAPI.Infrastructure.Data.Repository
             }
         }
 
-        public void Delete(TEntity obj)
+        public TEntity Update(TEntity entity)
         {
             try
             {
-                appDbContext.Set<TEntity>().Remove(obj);
+                appDbContext.Entry(entity).State = EntityState.Modified;
+                appDbContext.Set<TEntity>().Update(entity);
+                appDbContext.SaveChanges();
+                return entity;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public void Delete(int id)
+        {
+            try
+            {
+                var entity = appDbContext.Set<TEntity>().Find(id);
+
+                if (entity == null)
+                    return;
+
+                appDbContext.Set<TEntity>().Remove(entity);
                 appDbContext.SaveChanges();
             }
             catch (Exception ex)

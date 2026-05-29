@@ -3,7 +3,7 @@ using ProductAPI.Domain.Entity;
 
 namespace ProductAPI.Application.Interface.Mapper
 {
-    public interface IProductMapper : IBaseMapper<Product, ProductDto>
+    public interface ICategoryMapper : IBaseMapper<Category, CategoryDto>
     {
 
     }

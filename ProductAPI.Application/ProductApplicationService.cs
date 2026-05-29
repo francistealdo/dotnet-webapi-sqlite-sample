@@ -17,16 +17,23 @@ namespace ProductAPI.Application
             _mapper = mapper;
         }
 
-        public void Add(ProductDto productDto)
+        public ProductDto Add(ProductDto productDto)
         {
             Product product = _mapper.MapperDtoToEntity(productDto);
-            _service.Add(product);
+            Product result = _service.Add(product);
+            return _mapper.MapperEntityToDto(result);
         }
 
-        public void Delete(ProductDto productDto)
+        public ProductDto Update(ProductDto productDto)
         {
-            Product product = _service.GetById(productDto.Id);
-            _service.Delete(product);
+            Product product = _mapper.MapperDtoToEntity(productDto);
+            Product result = _service.Update(product);
+            return _mapper.MapperEntityToDto(result);
+        }
+
+        public void Delete(int id)
+        {
+            _service.Delete(id);
         }
 
         public IEnumerable<ProductDto> GetAll()
