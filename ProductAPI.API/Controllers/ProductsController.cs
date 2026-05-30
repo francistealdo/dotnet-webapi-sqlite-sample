@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ProductAPI.Application;
 using ProductAPI.Application.Dto;
 using ProductAPI.Application.Interface;
 
@@ -10,10 +11,12 @@ namespace ProductAPI.API.Controllers
     public class ProductsController : ControllerBase
     {
         private readonly IProductApplicationService _productApplicationService;
+        private readonly ICategoryApplicationService _categoryApplicationService;
 
-        public ProductsController(IProductApplicationService productApplicationService)
+        public ProductsController(IProductApplicationService productApplicationService, ICategoryApplicationService categoryApplicationService)
         {
             _productApplicationService = productApplicationService;
+            _categoryApplicationService = categoryApplicationService;
         }
 
         /// <summary>
@@ -60,6 +63,11 @@ namespace ProductAPI.API.Controllers
         [HttpPost]
         public ActionResult<ProductDto> Create([FromBody] ProductDto productDto)
         {
+            CategoryDto category = _categoryApplicationService.GetById(productDto.CategoryId);
+
+            if (category == null)
+                return BadRequest("Category is invalid.");
+
             var createdProduct = _productApplicationService.Add(productDto);
 
             return CreatedAtAction(

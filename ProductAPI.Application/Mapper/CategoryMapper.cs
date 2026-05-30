@@ -6,6 +6,12 @@ namespace ProductAPI.Application.Mapper
 {
     public class CategoryMapper : ICategoryMapper
     {
+        public readonly IProductMapper _productMapper;
+        public CategoryMapper(IProductMapper productMapper)
+        {
+            _productMapper = productMapper;
+        }
+
         public Category MapperDtoToEntity(CategoryDto dto)
         {
             Category category = new Category()
@@ -20,7 +26,9 @@ namespace ProductAPI.Application.Mapper
         {
             CategoryDto? dto = entity != null ? new CategoryDto()
             {
-                Name = entity.Name
+                Id = entity.Id,
+                Name = entity.Name,
+                Products = _productMapper.MapperListEntityToDto(entity.Products)
             } : null;
 
             return dto;

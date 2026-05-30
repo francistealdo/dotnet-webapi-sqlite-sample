@@ -60,12 +60,12 @@ namespace ProductAPI.Infrastructure.Data.Repository
             }
         }
 
-        public IEnumerable<TEntity> GetAll()
+        public virtual IEnumerable<TEntity> GetAll()
         {
             return appDbContext.Set<TEntity>().ToList();
         }
 
-        public TEntity GetById(int id)
+        public virtual TEntity GetById(int id)
         {
             return appDbContext.Set<TEntity>().Find(id);
         }
